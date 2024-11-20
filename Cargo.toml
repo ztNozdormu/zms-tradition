@@ -1,15 +1,15 @@
 [workspace]
 members = [
     # -- Libraries
-    "zms-tradition-proto-grpc-types",
-
+    "zms-tradition-proto-grpc-types", "zms-tradition-rest-types",
+    "zms-tradition-rest-types",
     # -- Binaries
 
 ]
 default-members = [
     # -- Libraries
     "zms-tradition-proto-grpc-types",
-
+    "zms-tradition-rest-types",
     # -- Binaries
 
 ]
