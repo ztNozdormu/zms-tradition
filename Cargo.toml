@@ -1,0 +1,16 @@
+[workspace]
+members = [
+    # -- Libraries
+    "zms-tradition-proto-grpc-types",
+
+    # -- Binaries
+
+]
+default-members = [
+    # -- Libraries
+    "zms-tradition-proto-grpc-types",
+
+    # -- Binaries
+
+]
+resolver = "2"
