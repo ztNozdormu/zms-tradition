@@ -2,7 +2,7 @@ use serde::{Deserialize, Serialize};
 
 // Request sections
 #[derive(Default, Debug, Deserialize)]
-pub struct PickerBotRequest {
+pub struct GateWayPickerRequest {
     pub strategy_type: String,
 }
 
@@ -17,7 +17,8 @@ pub struct PickerSymbol {
 // Response sections
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
-pub struct PickerBotResponse {
+pub struct W3dataPickerResponse {
+    pub strategy_type: String,
     pub picker_symbols: Vec<PickerSymbol>,
 }
 

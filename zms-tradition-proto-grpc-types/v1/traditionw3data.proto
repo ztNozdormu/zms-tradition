@@ -11,14 +11,19 @@ package traditionw3data.v1;
 
 // The zms tradition w3data service definition.
 service W3dataService {
+  // TODO query picker symbols  
   // save the picker bot pickers symbols
-  rpc SavePickerBotSymbols(PikerBotRequest) returns (PikerBotResponse) {}
+  rpc SavePickerBotSymbols(PickerBotRequest) returns (PikerBotResponse) {}
 }
 
 // Request sections
-message PikerBotRequest {
+message PickerBotRequest {
   string strategy_type = 1;
   repeated PickerSymbol picker_symbols = 2;
+}
+
+message GateWayPickerRequest {
+  string strategy_type = 1;
 }
 
 
@@ -31,6 +36,12 @@ message PickerSymbol {
 message PikerBotResponse {
   Status status = 1;
 }
+
+message GateWayPickerResponse {
+  string strategy_type = 1;
+  repeated PickerSymbol picker_symbols = 2;
+}
+
 
 enum Status {
   SUCCESS = 0;
