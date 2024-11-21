@@ -15,7 +15,7 @@ use tower_http::{
 };
 use tracing::{info, instrument};
 
-// use crate::zms_gw3data_client::query_picker_symbols;
+use crate::zms_gw3data_client::query_picker_symbols;
 
 const QUERY_PICKER_SYMBOLS: &str = "/api/zms-tradition/query_picker_symbols";
 
@@ -46,6 +46,6 @@ pub async fn router() -> Router {
     info!("Creating router");
     Router::new()
         .route("/", get(root).post(root))
-        .route(QUERY_PICKER_SYMBOLS, post(calculate_portfolio))
+        .route(QUERY_PICKER_SYMBOLS, post(query_picker_symbols))
         .layer(middleware)
 }

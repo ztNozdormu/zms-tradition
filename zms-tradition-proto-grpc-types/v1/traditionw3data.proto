@@ -11,7 +11,9 @@ package traditionw3data.v1;
 
 // The zms tradition w3data service definition.
 service W3dataService {
-  // TODO query picker symbols  
+  // query picker symbols  
+  rpc QueryPickerSymbols(GateWayPickerRequest) returns (GateWayPickerResponse) {}
+
   // save the picker bot pickers symbols
   rpc SavePickerBotSymbols(PickerBotRequest) returns (PikerBotResponse) {}
 }

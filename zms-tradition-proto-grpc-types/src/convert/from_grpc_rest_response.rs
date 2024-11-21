@@ -2,7 +2,7 @@ use tracing::{info, info_span};
 // grpc data to rest data
 
 use zms_tradition_rest_types::rest_types::{
-    PickerSymbol as RestPickerSymbol, W3dataPickerResponse as RestW3dataPickerResponse,
+    PickerSymbol as RestPickerSymbol, GateWayPickerResponse as RestGateWayPickerResponse,
     ProcessingError as RestProcessingError,
 };
 
@@ -29,9 +29,9 @@ impl From<GrpcPickerSymbol> for RestPickerSymbol {
     }
 }
 
-impl From<GrpcGateWayPickerResponse> for RestW3dataPickerResponse {
+impl From<GrpcGateWayPickerResponse> for RestGateWayPickerResponse {
     fn from(grpc: GrpcGateWayPickerResponse) -> Self {
-        let rest: RestW3dataPickerResponse = Self {
+        let rest: RestGateWayPickerResponse = Self {
             strategy_type: grpc.strategy_type,
             picker_symbols: grpc.picker_symbols.into_iter().map(|x| x.into()).collect(),
         };
