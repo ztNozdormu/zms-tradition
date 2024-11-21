@@ -13,4 +13,4 @@ Legends of mountains and seas ；crypto trading platform
 1. 基础数据定义转换函数实现
 2. 初始化 zms-tradition-rest-gateway-server 网关服务
 3. 初始化 zms-tradition-gw3data-server 业务数据服务
-4. 初始化 zms-tradition-picker-gbot  选币机器人服务
+4. 初始化 zms-tradition-picker-gbot  选币机器人服务 gbot：提供grpc服务 rbot:提供rest接口服务
