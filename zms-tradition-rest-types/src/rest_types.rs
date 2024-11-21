@@ -2,12 +2,12 @@ use serde::{Deserialize, Serialize};
 
 // Request sections
 #[derive(Default, Debug, Deserialize)]
-pub struct PickerSymbolRequest {
+pub struct PickerBotRequest {
     pub strategy_type: String,
 }
 
 // picker symbols data
-#[derive(Default, Debug, Deserialize)]
+#[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct PickerSymbol {
     pub symbol: String,
 }
@@ -16,8 +16,8 @@ pub struct PickerSymbol {
 
 // Response sections
 
-#[derive(Default, Debug, Deserialize)]
-pub struct PickerSymbolResponse {
+#[derive(Default, Debug, Serialize, Deserialize, Clone)]
+pub struct PickerBotResponse {
     pub picker_symbols: Vec<PickerSymbol>,
 }
 

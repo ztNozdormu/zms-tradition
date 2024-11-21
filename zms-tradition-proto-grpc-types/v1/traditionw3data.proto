@@ -1,0 +1,44 @@
+syntax = "proto3";
+
+// ~/drinnovations/mywork_jmd/rust_1_parvatimata_shivji_learnings_jmd/rust_courses_jmd/rust_tokio_ecosystem_video_text__/tonic_video_text/tonic-deposits-grpc-only-jmd git:[v0.3]
+//buf lint
+// after doing brew install bufbuild/buf/buf
+// buf:lint:ignore PACKAGE_DIRECTORY_MATCH
+package traditionw3data.v1;
+
+// import "google/protobuf/wrappers.proto";
+
+
+// The zms tradition w3data service definition.
+service W3dataService {
+  // save the picker bot pickers symbols
+  rpc SavePickerBotSymbols(PikerBotRequest) returns (PikerBotResponse) {}
+}
+
+// Request sections
+message PikerBotRequest {
+  string strategy_type = 1;
+  repeated PickerSymbol picker_symbols = 2;
+}
+
+
+message PickerSymbol {
+  string symbol = 1;
+}
+
+// Response sections
+
+message PikerBotResponse {
+  Status status = 1;
+}
+
+enum Status {
+  SUCCESS = 0;
+  FAIL = 1;
+}
+
+// Error sections
+message ProcessingError {
+  string uuid = 1;
+  string message = 2;
+}

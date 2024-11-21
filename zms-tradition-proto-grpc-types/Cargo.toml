@@ -11,3 +11,6 @@ tracing = "0.1.40"
 
 # workspace member depdenencies
 zms-tradition-rest-types = { path = "../zms-tradition-rest-types" }
+
+[build-dependencies]
+tonic-build = "0.12.0"
