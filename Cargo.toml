@@ -1,16 +1,20 @@
 [workspace]
-members = [
+members = [ "zms-tradition-gw3data-server", "zms-tradition-picker-gbot",
     # -- Libraries
-    "zms-tradition-proto-grpc-types", "zms-tradition-rest-types",
+    "zms-tradition-proto-grpc-types", "zms-tradition-rest-gateway-server", "zms-tradition-rest-types",
     "zms-tradition-rest-types",
     # -- Binaries
-
+    "zms-tradition-rest-gateway-server",
+    "zms-tradition-gw3data-server",
+    "zms-tradition-picker-gbot",
 ]
 default-members = [
     # -- Libraries
     "zms-tradition-proto-grpc-types",
     "zms-tradition-rest-types",
     # -- Binaries
-
+    "zms-tradition-rest-gateway-server",
+    "zms-tradition-gw3data-server",
+    "zms-tradition-picker-gbot",
 ]
 resolver = "2"

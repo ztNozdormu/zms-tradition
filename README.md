@@ -9,3 +9,8 @@ Legends of mountains and seas ；crypto trading platform
 ### 2024-11-20
 1. 初始化 cargo new --lib zms-tradition-proto-grpc-types 模块
 2. 初始化 cargo new --lib zms-tradition-rest-types 模块
+### 2024-11-21
+1. 基础数据定义转换函数实现
+2. 初始化 zms-tradition-rest-gateway-server 网关服务
+3. 初始化 zms-tradition-gw3data-server 业务数据服务
+4. 初始化 zms-tradition-picker-gbot  选币机器人服务

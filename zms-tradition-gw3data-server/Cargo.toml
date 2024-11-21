@@ -1,0 +1,6 @@
+[package]
+name = "zms-tradition-gw3data-server"
+version = "0.1.0"
+edition = "2021"
+
+[dependencies]
