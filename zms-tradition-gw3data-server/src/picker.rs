@@ -9,9 +9,7 @@ use zms_tradition_proto_grpc_types::generated::{
 mod grpc_status_handler;
 mod query_service;
 
-pub struct PickerBus {
-    // TODO DB
-}
+pub struct PickerBus;
 
 #[async_trait]
 impl W3dataService for PickerBus {
@@ -35,8 +33,8 @@ impl W3dataService for PickerBus {
         &self,
         request: tonic::Request<PickerBotRequest>,
     ) -> Result<Response<PikerBotResponse>, Status> {
-        info_span!("grpc_calculate_portfolio");
-        debug!("calculate_portfolio request incoming is : {:#?}", request);
+        info_span!("grpc_picker_symbols");
+        debug!("query picker symbols request incoming is : {:#?}", request);
         todo!()
     }
 }

@@ -1,6 +1,6 @@
 [env]
 # https://doc.rust-lang.org/cargo/reference/config.html#env
-RUST_LOG = { value = "zms_tradition_rest_types=debug,zms_tradition_proto_grpc_types=debug,zms_tradition_rest_gateway_server=debug", force = true }
+RUST_LOG = { value = "zms_tradition_rest_types=debug,zms_tradition_proto_grpc_types=debug,zms_tradition_rest_gateway_server=debug,zms_tradition_gw3data_server=debug", force = true }
 
 
 GRPC_SERVER_ADDRESS = "http://[::]:50052"
