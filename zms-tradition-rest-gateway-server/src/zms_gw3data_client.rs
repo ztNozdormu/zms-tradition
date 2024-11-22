@@ -4,17 +4,16 @@ use std::env::var;
 use tracing::{debug, debug_span, error, info};
 
 use app_error::Error as AppError;
+use request_error::ValidateGateWayPickerRequest;
+use tonic::transport::Channel;
 use zms_tradition_proto_grpc_types::generated::{
-    w3data_service_client::W3dataServiceClient,
-    GateWayPickerRequest as GrpcGateWayPickerRequest,
+    w3data_service_client::W3dataServiceClient, GateWayPickerRequest as GrpcGateWayPickerRequest,
     GateWayPickerResponse as GrpcGateWayPickerResponse,
 };
 use zms_tradition_rest_types::rest_types::{
     GateWayPickerRequest as RestGateWayPickerRequest,
     GateWayPickerResponse as RestGateWayPickerResponse,
 };
-use request_error::ValidateGateWayPickerRequest;
-use tonic::transport::Channel;
 
 mod app_error;
 mod request_error;
@@ -97,21 +96,18 @@ pub async fn query_piker_symbols_with_client(
     })
 }
 
-
 #[cfg(test)]
 mod tests {
     use super::query_piker_symbols_with_client;
     use crate::zms_gw3data_client::MockW3dataClient;
-    use zms_tradition_proto_grpc_types::generated::{
-        PickerSymbol as GrpcPickerSymbol,
-        GateWayPickerResponse as GrpcGateWayPickerResponse,
-    };
-    use zms_tradition_rest_types::rest_types::{
-        PickerSymbol as RestPickerSymbol,
-        GateWayPickerRequest as RestGateWayPickerRequest,
-    };
     use pretty_assertions::assert_eq;
     use tracing_subscriber::fmt::format::FmtSpan;
+    use zms_tradition_proto_grpc_types::generated::{
+        GateWayPickerResponse as GrpcGateWayPickerResponse, PickerSymbol as GrpcPickerSymbol,
+    };
+    use zms_tradition_rest_types::rest_types::{
+        GateWayPickerRequest as RestGateWayPickerRequest, PickerSymbol as RestPickerSymbol,
+    };
 
     fn init_test_subscriber() {
         let subscriber = tracing_subscriber::fmt()
@@ -141,7 +137,7 @@ mod tests {
             });
 
         let rest_request = RestGateWayPickerRequest {
-            strategy_type:"ewo_v7".to_string(),
+            strategy_type: "ewo_v7".to_string(),
         };
         let result = query_piker_symbols_with_client(rest_request, mock_client).await;
 
@@ -153,7 +149,6 @@ mod tests {
             symbol: "btcusdt".to_string(),
         };
         let actual_picker_symbol = response.picker_symbols.first().unwrap().symbol.clone();
-        assert_eq!(actual_picker_symbol,expected_grpc_picker_symbol.symbol);
+        assert_eq!(actual_picker_symbol, expected_grpc_picker_symbol.symbol);
     }
-    
 }

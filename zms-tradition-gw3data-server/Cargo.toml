@@ -11,6 +11,10 @@ tonic-types = "0.12.3"
 tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
 tokio = { version = "1.38.0", features = ["full"] }
 
+thiserror = "1.0.61"
+serde = { version = "1.0.203", features = ["derive"] }
+serde_json = "1.0.117"
+
 # workspace member depdenencies
 zms-tradition-rest-types = { path = "../zms-tradition-rest-types" }
 # proto generated dependency here the zms-tradition-proto-grpc-types is still package

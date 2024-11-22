@@ -7,7 +7,7 @@ use zms_tradition_rest_types::rest_types::{
 };
 
 use crate::generated::{
-    PickerSymbol as GrpcPickerSymbol, GateWayPickerRequest as GrpcGateWayPickerRequest,
+    GateWayPickerRequest as GrpcGateWayPickerRequest, PickerSymbol as GrpcPickerSymbol,
 };
 
 // RestPickerSymbol to GrpcPickerSymbol
@@ -15,7 +15,7 @@ impl From<RestPickerSymbol> for GrpcPickerSymbol {
     fn from(rest: RestPickerSymbol) -> Self {
         debug!(
             "rest.symbol.to_shouty_snake_case() is {}",
-             rest.symbol.to_shouty_snake_case()
+            rest.symbol.to_shouty_snake_case()
         );
         GrpcPickerSymbol {
             symbol: rest.symbol,

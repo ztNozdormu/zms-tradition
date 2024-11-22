@@ -2,13 +2,12 @@ use tracing::{info, info_span};
 // grpc data to rest data
 
 use zms_tradition_rest_types::rest_types::{
-    PickerSymbol as RestPickerSymbol, GateWayPickerResponse as RestGateWayPickerResponse,
+    GateWayPickerResponse as RestGateWayPickerResponse, PickerSymbol as RestPickerSymbol,
     ProcessingError as RestProcessingError,
 };
 
 use crate::generated::{
-    PickerSymbol as GrpcPickerSymbol,
-    GateWayPickerResponse as GrpcGateWayPickerResponse,
+    GateWayPickerResponse as GrpcGateWayPickerResponse, PickerSymbol as GrpcPickerSymbol,
     ProcessingError as GrpcProcessingError,
 };
 

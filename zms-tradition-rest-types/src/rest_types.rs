@@ -12,8 +12,6 @@ pub struct PickerSymbol {
     pub symbol: String,
 }
 
-
-
 // Response sections
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
@@ -21,7 +19,6 @@ pub struct GateWayPickerResponse {
     pub strategy_type: String,
     pub picker_symbols: Vec<PickerSymbol>,
 }
-
 
 #[derive(Default, Debug, Serialize, Deserialize, Clone)]
 pub struct ProcessingError {
