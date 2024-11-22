@@ -15,7 +15,7 @@ service W3dataService {
   rpc QueryPickerSymbols(GateWayPickerRequest) returns (GateWayPickerResponse) {}
 
   // save the picker bot pickers symbols
-  rpc SavePickerBotSymbols(PickerBotRequest) returns (PikerBotResponse) {}
+  rpc SavePickerBotSymbols(PickerBotRequest) returns (PickerBotResponse) {}
 }
 
 // Request sections
@@ -35,7 +35,7 @@ message PickerSymbol {
 
 // Response sections
 
-message PikerBotResponse {
+message PickerBotResponse {
   Status status = 1;
 }
 

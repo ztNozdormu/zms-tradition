@@ -15,7 +15,7 @@ use tower_http::{
 };
 use tracing::{info, instrument};
 
-use crate::zms_gw3data_client::query_picker_symbols;
+use crate::gw3data_client::query_picker_symbols;
 
 const QUERY_PICKER_SYMBOLS: &str = "/api/zms-tradition/query_picker_symbols";
 

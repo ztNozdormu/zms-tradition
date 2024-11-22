@@ -99,7 +99,7 @@ pub async fn query_piker_symbols_with_client(
 #[cfg(test)]
 mod tests {
     use super::query_piker_symbols_with_client;
-    use crate::zms_gw3data_client::MockW3dataClient;
+    use crate::gw3data_client::MockW3dataClient;
     use pretty_assertions::assert_eq;
     use tracing_subscriber::fmt::format::FmtSpan;
     use zms_tradition_proto_grpc_types::generated::{
