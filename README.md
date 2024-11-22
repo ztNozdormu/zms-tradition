@@ -14,3 +14,5 @@ Legends of mountains and seas ；crypto trading platform
 2. 初始化 zms-tradition-rest-gateway-server 网关服务
 3. 初始化 zms-tradition-gw3data-server 业务数据服务
 4. 初始化 zms-tradition-picker-gbot  选币机器人服务 gbot：提供grpc服务 rbot:提供rest接口服务
+### 2024-1-22
+1. 网关服务增加启动逻辑，增加全局配置config.toml
