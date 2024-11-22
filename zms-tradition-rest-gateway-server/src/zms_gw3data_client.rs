@@ -96,3 +96,64 @@ pub async fn query_piker_symbols_with_client(
         Ok(Json(rest_response))
     })
 }
+
+
+#[cfg(test)]
+mod tests {
+    use super::query_piker_symbols_with_client;
+    use crate::zms_gw3data_client::MockW3dataClient;
+    use zms_tradition_proto_grpc_types::generated::{
+        PickerSymbol as GrpcPickerSymbol,
+        GateWayPickerResponse as GrpcGateWayPickerResponse,
+    };
+    use zms_tradition_rest_types::rest_types::{
+        PickerSymbol as RestPickerSymbol,
+        GateWayPickerRequest as RestGateWayPickerRequest,
+    };
+    use pretty_assertions::assert_eq;
+    use tracing_subscriber::fmt::format::FmtSpan;
+
+    fn init_test_subscriber() {
+        let subscriber = tracing_subscriber::fmt()
+            .with_test_writer()
+            .with_span_events(FmtSpan::FULL)
+            .finish();
+        tracing::subscriber::set_global_default(subscriber)
+            .expect("setting default subscriber failed");
+    }
+
+    #[tokio::test]
+    async fn test_query_piker_symbols_with_client() {
+        init_test_subscriber();
+        let mut mock_client = MockW3dataClient::new();
+
+        let test_grpc_picker_symbol = GrpcPickerSymbol {
+            symbol: "btcusdt".to_string(),
+        };
+        mock_client
+            .expect_query_picker_symbols_request()
+            .returning(move |_grpc_request| {
+                let grpc_response = GrpcGateWayPickerResponse {
+                    strategy_type: "ewo_v7".to_string(),
+                    picker_symbols: vec![test_grpc_picker_symbol.clone()],
+                };
+                Ok(tonic::Response::new(grpc_response))
+            });
+
+        let rest_request = RestGateWayPickerRequest {
+            strategy_type:"ewo_v7".to_string(),
+        };
+        let result = query_piker_symbols_with_client(rest_request, mock_client).await;
+
+        assert!(result.is_ok());
+        let response = result.unwrap();
+        assert_eq!(response.strategy_type, "ewo_v7".to_string());
+
+        let expected_grpc_picker_symbol = RestPickerSymbol {
+            symbol: "btcusdt".to_string(),
+        };
+        let actual_picker_symbol = response.picker_symbols.first().unwrap().symbol.clone();
+        assert_eq!(actual_picker_symbol,expected_grpc_picker_symbol.symbol);
+    }
+    
+}

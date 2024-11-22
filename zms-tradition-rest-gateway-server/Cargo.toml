@@ -23,3 +23,6 @@ zms-tradition-rest-types = { path = "../zms-tradition-rest-types" }
 # proto generated dependency here the zms-tradition-proto-grpc-types is still package
 # name so with dashes
 zms-tradition-proto-grpc-types = { path = "../zms-tradition-proto-grpc-types" }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
