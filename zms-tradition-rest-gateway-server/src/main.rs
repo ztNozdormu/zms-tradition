@@ -10,7 +10,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     registry()
         .with(
             EnvFilter::try_from_default_env()?
-                // added in .cargo/config.toml .add_directive("drive_deposits_rest_grpc_gateway=debug".parse()?)
+                // added in .cargo/config.toml .add_directive("zms_tradition_rest_grpc_gateway=debug".parse()?)
                 .add_directive("axum::rejection=trace".parse()?)
                 .add_directive("tower_http=debug".parse()?),
         )
