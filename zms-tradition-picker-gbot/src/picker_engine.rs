@@ -17,5 +17,6 @@ pub fn picker_symbols_calculate_by_factory(
     let cal_config =  PickerSymbolsConfig{};
     info!("picker symbols cal config is : {cal_config:?}");
     // call gw3data_client::save_piker_symbols_with_client()
-    todo!()
+    // todo!()
+    info!("picker symbols cal logic todo impl da da da ");
 }

@@ -3,14 +3,14 @@ use std::error::Error;
 use tracing::{debug, debug_span, info, Instrument};
 use tracing_subscriber::{layer::SubscriberExt, registry, util::SubscriberInitExt, EnvFilter};
 
-use zms_tradition_picker_gbot::{picker_engine::{self, PickerSymbolsConfig}, service_router::router};
+use zms_tradition_picker_gbot::{picker_engine, service_router::router};
 
 #[tokio::main]
 async fn main() -> Result<(), Box<dyn Error>> {
     registry()
         .with(
             EnvFilter::try_from_default_env()?
-                // added in .cargo/config.toml .add_directive("zms_tradition_rest_grpc_gateway=debug".parse()?)
+                // added in .cargo/config.toml .add_directive("zms_tradition_picker_gbot=debug".parse()?)
                 .add_directive("axum::rejection=trace".parse()?)
                 .add_directive("tower_http=debug".parse()?),
         )
@@ -33,7 +33,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     span.in_scope(|| debug!("router is being set up first up"));
     let app_router = router().instrument(span.clone()).await;
 
-    let span = tracing::span!(tracing::Level::INFO, "server");
+    let span = tracing::span!(tracing::Level::INFO, "picker_bot_server");
     // picker lunch calculate
     picker_engine::picker_symbols_calculate_by_factory(); 
     // run it
