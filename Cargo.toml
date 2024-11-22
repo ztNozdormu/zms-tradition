@@ -3,15 +3,17 @@ members = [
     # -- Libraries
     "zms-tradition-proto-grpc-types",
     "zms-tradition-rest-types",
+    "zms-tradition-cal-types",
     # -- Binaries
     "zms-tradition-rest-gateway-server",
     "zms-tradition-gw3data-server",
-    "zms-tradition-picker-gbot",
+    "zms-tradition-picker-gbot", "zms-tradition-cal-types",
 ]
 default-members = [
     # -- Libraries
     "zms-tradition-proto-grpc-types",
     "zms-tradition-rest-types",
+    "zms-tradition-cal-types",
     # -- Binaries
     "zms-tradition-rest-gateway-server",
     "zms-tradition-gw3data-server",

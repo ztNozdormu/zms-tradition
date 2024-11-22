@@ -11,13 +11,14 @@ Legends of mountains and seas ；crypto trading platform
 2. 初始化 cargo new --lib zms-tradition-rest-types 模块
 ### 2024-11-21
 1. 基础数据定义转换函数实现
-2. 初始化 zms-tradition-rest-gateway-server 网关服务
-3. 初始化 zms-tradition-gw3data-server 业务数据服务
-4. 初始化 zms-tradition-picker-gbot  选币机器人服务 gbot：提供grpc服务 rbot:提供rest接口服务
+2. 初始化 cargo new zms-tradition-rest-gateway-server 网关服务
+3. 初始化 cargo new zms-tradition-gw3data-server 业务数据服务
+4. 初始化 cargo new zms-tradition-picker-gbot  选币机器人服务 gbot：提供grpc服务 rbot:提供rest接口服务
 ### 2024-1-22
 1. 网关服务增加启动逻辑，增加全局配置config.toml
 2. 业务数据服务增加选币查询逻辑【模拟数据】增加服务启动 路由
 3. 选币机器人服务增加服务启动逻辑
+4. 初始化 cargo new --lib zms-tradition-cal-types 因子，指标计算模块
 ### 2024-11-22 TODO
 1. 市场基本数据获取逻辑完善
 2. 指标计算
