@@ -4,3 +4,24 @@ version = "0.1.0"
 edition = "2021"
 
 [dependencies]
+axum = { version = "0.7.7", features = ["macros"] }
+tokio = { version = "1.38.0", features = ["full"] }
+serde = { version = "1.0.203", features = ["derive"] }
+serde_json = "1.0.117"
+thiserror = "1.0.61"
+validator = { version = "0.18.1", features = ["derive"] }
+tonic = "0.12.3"
+tracing = "0.1.40"
+tracing-subscriber = { version = "0.3.18", features = ["env-filter"] }
+# tower and tower-http
+tower = { version = "0.4.13", features = ["full"] }
+tower-http = { version = "0.5.2", features = ["full"] }
+mockall = "0.13.0"
+
+# workspace member depdenencies
+# proto generated dependency here the zms-tradition-proto-grpc-types is still package
+# name so with dashes
+zms-tradition-proto-grpc-types = { path = "../zms-tradition-proto-grpc-types" }
+
+[dev-dependencies]
+pretty_assertions = "1.4.1"
