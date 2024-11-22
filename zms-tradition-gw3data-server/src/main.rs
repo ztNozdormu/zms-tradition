@@ -10,7 +10,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
     registry()
         .with(
             EnvFilter::try_from_default_env()
-                .inspect_err(|err| println!(" error err is {:?}", err))?, // added in .cargo/config.toml.add_directive("zms-tradition_grpc=debug".parse()?),
+                .inspect_err(|err| println!(" error err is {:?}", err))?, // added in .cargo/config.toml.add_directive("zms_tradition_gw3data_server=debug".parse()?),
         )
         .with(tracing_subscriber::fmt::layer())
         .init();
