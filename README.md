@@ -16,3 +16,5 @@ Legends of mountains and seas ；crypto trading platform
 4. 初始化 zms-tradition-picker-gbot  选币机器人服务 gbot：提供grpc服务 rbot:提供rest接口服务
 ### 2024-1-22
 1. 网关服务增加启动逻辑，增加全局配置config.toml
+2. 业务数据服务增加选币查询逻辑【模拟数据】增加服务启动 路由
+3. 选币机器人服务增加服务启动逻辑
