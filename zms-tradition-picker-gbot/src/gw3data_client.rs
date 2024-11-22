@@ -12,7 +12,6 @@ use zms_tradition_proto_grpc_types::generated::{
     PickerBotResponse as GrpcPickerBotResponse,
 };
 
-mod cal_picker_symbols;
 mod app_error;
 mod request_error;
 
@@ -37,6 +36,19 @@ impl W3dataClient for W3dataServiceClient<Channel> {
         self.save_picker_bot_symbols(request).await
     }
 }
+
+// ping picker bot is active grpc request arg:Request {Enum BotType {picker } }
+// #[debug_handler]
+pub async fn ping() {
+   todo!()
+}
+
+// load w3dataserver config  grpc request arg: Request {bot id , Enum BotType {picker }} 
+// #[debug_handler]
+pub async fn load_config() {// TODO --- Response PickerSymbolsConfig
+    todo!()
+ }
+
 
 // #[debug_handler]
 pub async fn save_picker_bot_symbols(
