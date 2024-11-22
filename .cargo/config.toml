@@ -1,0 +1,15 @@
+[env]
+# https://doc.rust-lang.org/cargo/reference/config.html#env
+RUST_LOG = { value = "zms_tradition_rest_types=debug,zms_tradition_proto_grpc_types=debug,drive_deposits_rest_gateway_server=debug", force = true }
+
+
+GRPC_SERVER_ADDRESS = "http://[::]:50052"
+
+# default settings -- can be changed by setting these env. variables on command line
+SEND_CAL_EVENTS = "true"
+USE_LOCALSTACK = "false"
+
+
+[alias]
+# https://doc.rust-lang.org/cargo/reference/config.html#alias
+# ddcheck = "run --package zms-tradition-check-cmd --bin zms-tradition-check-cmd"

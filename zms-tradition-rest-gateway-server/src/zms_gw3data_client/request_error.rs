@@ -5,7 +5,6 @@ use axum::response::{IntoResponse, Response};
 use axum::{async_trait, Json};
 use thiserror::Error as thisError;
 use tracing::info;
-use validator::Validate;
 
 use zms_tradition_rest_types::rest_types::GateWayPickerRequest;
 
