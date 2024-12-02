@@ -51,6 +51,10 @@ async fn market_data_feed(symbol: String) {
     }
 }
 
+async fn cal_indicator(){
+    todo!()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
