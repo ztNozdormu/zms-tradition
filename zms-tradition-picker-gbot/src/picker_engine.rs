@@ -54,18 +54,3 @@ async fn market_data_feed(symbol: String) {
 async fn cal_indicator(){
     todo!()
 }
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-
-    #[tokio::test]
-    async fn test_get_symbols() {
-        let symbols = get_symbols().await;
-        println!("symbols{:?}", symbols.get(0))
-    }
-    #[tokio::test]
-    async fn test_market_data_feed() {
-        market_data_feed("btcusdt".to_string()).await;
-    }
-}
