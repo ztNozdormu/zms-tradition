@@ -35,7 +35,7 @@ async fn main() -> Result<(), Box<dyn Error>> {
 
     let span = tracing::span!(tracing::Level::INFO, "picker_bot_server");
     // picker lunch calculate
-    picker_engine::picker_symbols_calculate_by_factory(); 
+    picker_engine::picker_symbols_calculate_by_factory();
     // run it
     let listener = tokio::net::TcpListener::bind("0.0.0.0:8001").await?;
     let listening_on = listener.local_addr()?;

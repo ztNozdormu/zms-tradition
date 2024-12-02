@@ -2,7 +2,8 @@ use tonic::{async_trait, Request, Response, Status};
 use tracing::{debug, error, info_span};
 
 use zms_tradition_proto_grpc_types::generated::{
-    w3data_service_server::W3dataService, GateWayPickerRequest, GateWayPickerResponse, PickerBotRequest, PickerBotResponse
+    w3data_service_server::W3dataService, GateWayPickerRequest, GateWayPickerResponse,
+    PickerBotRequest, PickerBotResponse,
 };
 
 mod grpc_status_handler;

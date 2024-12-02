@@ -46,7 +46,7 @@ where
     type Rejection = Error;
 
     async fn from_request(req: Request, state: &S) -> Result<Self, Self::Rejection> {
-        let Json(value) = req.into();//Json::<PickerBotRequest>::from_request(req, state).await?;
+        let Json(value) = req.into(); //Json::<PickerBotRequest>::from_request(req, state).await?;
 
         //  todo value.validate()?;
         todo!()

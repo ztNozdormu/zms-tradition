@@ -7,8 +7,7 @@ use app_error::Error as AppError;
 use request_error::ValidatePickerBotRequest;
 use tonic::transport::Channel;
 use zms_tradition_proto_grpc_types::generated::{
-    w3data_service_client::W3dataServiceClient, 
-    PickerBotRequest as GrpcPickerBotRequest,
+    w3data_service_client::W3dataServiceClient, PickerBotRequest as GrpcPickerBotRequest,
     PickerBotResponse as GrpcPickerBotResponse,
 };
 
@@ -40,15 +39,15 @@ impl W3dataClient for W3dataServiceClient<Channel> {
 // ping picker bot is active grpc request arg:Request {Enum BotType {picker } }
 // #[debug_handler]
 pub async fn ping() {
-   todo!()
+    todo!()
 }
 
-// load w3dataserver config  grpc request arg: Request {bot id , Enum BotType {picker }} 
+// load w3dataserver config  grpc request arg: Request {bot id , Enum BotType {picker }}
 // #[debug_handler]
-pub async fn load_config() {// TODO --- Response PickerSymbolsConfig
+pub async fn load_config() {
+    // TODO --- Response PickerSymbolsConfig
     todo!()
- }
-
+}
 
 // #[debug_handler]
 pub async fn save_picker_bot_symbols(
