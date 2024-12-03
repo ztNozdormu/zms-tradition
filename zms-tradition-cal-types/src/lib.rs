@@ -1,13 +1,14 @@
-pub mod trend_algorithm;
 mod macros_polars;
 use barter_xchange::exchange::binance::{api::Binance, futures::{general::FuturesGeneral, market::FuturesMarket}, model::{KlineSummaries, KlineSummary, Symbol}};
 use polars_talib::{DataFrame,Series,NamedFrom};
 use tracing::info;
 
-
+pub mod trend_algorithm;
+pub mod cal_types;
+pub mod calculation_error;
 
 // get symbols list
-async fn get_symbols() -> Vec<Symbol> {
+pub async fn get_symbols() -> Vec<Symbol> {
     let general: FuturesGeneral = Binance::new(None, None);
     let symbols = match general.get_symbol_infos().await {
         Ok(symbols) => symbols,
@@ -20,7 +21,7 @@ async fn get_symbols() -> Vec<Symbol> {
 }
 
 // get symnol candles
-async fn market_data_feed(symbol: &str) -> Vec<KlineSummary> {
+pub async fn market_data_feed(symbol: &str) -> Vec<KlineSummary> {
     let market: FuturesMarket = Binance::new(None, None);
 
     match market.get_klines(symbol, "5m", None, None, None).await {
@@ -33,7 +34,7 @@ async fn market_data_feed(symbol: &str) -> Vec<KlineSummary> {
 }
 
 // candle to dataframe
-async fn candle_to_dataframe(klines: &Vec<KlineSummary>) -> DataFrame {
+pub async fn candle_to_dataframe(klines: &Vec<KlineSummary>) -> DataFrame {
     struct_vec_to_dataframe!(klines, open, high, low, close, volume, close_time)
 }
 
