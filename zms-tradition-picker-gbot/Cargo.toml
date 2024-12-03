@@ -22,12 +22,13 @@ mockall = "0.13.0"
 # proto generated dependency here the zms-tradition-proto-grpc-types is still package
 # name so with dashes
 zms-tradition-proto-grpc-types = { path = "../zms-tradition-proto-grpc-types" }
+zms-tradition-cal-types = { path = "../zms-tradition-cal-types" }
 
 # exchange
-barter-xchange = { git = "https://github.com/ztNozdormu/barter-rs.git", members = ["barter-xchange"], branch="dev-local" }
-polars =  { version = "0.36.2", features = ["lazy","dtype-array","serde","dtype-date","dtype-datetime","strings"] }
-# polars_talib = { git = "https://github.com/ztNozdormu/polars_ta_extension.git", branch="master"} # mac
-polars_talib = { path = "E://opso-worspace/trader/polars_ta_extension" } # dev windows
+# barter-xchange = { git = "https://github.com/ztNozdormu/barter-rs.git", members = ["barter-xchange"], branch="dev-local" }
+# polars =  { version = "0.36.2", features = ["lazy","dtype-array","serde","dtype-date","dtype-datetime","strings"] }
+# # polars_talib = { git = "https://github.com/ztNozdormu/polars_ta_extension.git", branch="master"} # mac
+# polars_talib = { path = "E://opso-worspace/trader/polars_ta_extension" } # dev windows
 
 [dev-dependencies]
 pretty_assertions = "1.4.1"
