@@ -1,6 +1,7 @@
 mod macros_polars;
 use barter_xchange::exchange::binance::{api::Binance, futures::{general::FuturesGeneral, market::FuturesMarket}, model::{KlineSummaries, KlineSummary, Symbol}};
-use polars_talib::{DataFrame,Series,NamedFrom};
+use polars_talib::{frame::DataFrame, series::Series};
+use polars_talib::prelude::NamedFrom;
 use tracing::info;
 
 pub mod trend_algorithm;

@@ -20,9 +20,8 @@ heck = "0.5.0"
 # indicator
 # exchange
 barter-xchange = { git = "https://github.com/ztNozdormu/barter-rs.git", members = ["barter-xchange"], branch="dev-local" }
-# polars =  { version = "0.36.2", features = ["lazy","dtype-array","serde","dtype-date","dtype-datetime","strings"] }
-polars_talib = { git = "https://github.com/ztNozdormu/polars_ta_extension.git", branch="plta-dev"} # mac
-# polars_talib = { path = "E://opso-worspace/trader/polars_ta_extension" } # dev windows
+# polars
+polars_talib = { git = "https://github.com/ztNozdormu/polars_ta_extension.git", branch="plta-dev"} 
 
 [dev-dependencies]
 pretty_assertions = "1.4.0"
