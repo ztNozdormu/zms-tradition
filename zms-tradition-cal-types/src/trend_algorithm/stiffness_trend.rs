@@ -15,7 +15,8 @@ use crate::{calculation_error::StiffnessError, candle_to_dataframe};
 
 // calculate indicators
 pub async fn calculate_indicators(klines: &Vec<KlineSummary>) -> Result<DataFrame, StiffnessError> {
-    let df = candle_to_dataframe(klines).await;
+    
+    let mut df = candle_to_dataframe(klines).await;
 
     // 计算 ATR（14 周期）
     df = calculate_atr(&df, 14).expect("atr计算失败"); //df.ta_atr("high", "low", "close", 14, "atr_real")?;
@@ -62,27 +63,27 @@ pub async fn calculate_indicators(klines: &Vec<KlineSummary>) -> Result<DataFram
     //       .collect().expect("计算 ADX 趋势发生错误");
 
     // 计算动量指标
-    let momentum_df = adx_trend
-        .lazy()
-        .with_column(
-            ((col("close") / col("close").shift(polars_talib::prelude::Expr::Nth(21)) - lit(1.0))
-                .alias("momentum_21")),
-        )
-        .with_column(
-            ((col("close") / col("close").shift(polars_talib::prelude::Expr::Nth(58)) - lit(1.0))
-                .alias("momentum_58")),
-        )
-        .with_column(
-            ((col("close") / col("close").shift(polars_talib::prelude::Expr::Nth(144)) - lit(1.0))
-                .alias("momentum_144")),
-        )
-        .collect()
-        .expect("计算动量指标发生错误");
+    // let momentum_df = adx_trend
+    //     .lazy()
+    //     .with_column(
+    //         ((col("close") / col("close").shift(polars_talib::prelude::Expr::Nth(21)) - lit(1.0))
+    //             .alias("momentum_21")),
+    //     )
+    //     .with_column(
+    //         ((col("close") / col("close").shift(polars_talib::prelude::Expr::Nth(58)) - lit(1.0))
+    //             .alias("momentum_58")),
+    //     )
+    //     .with_column(
+    //         ((col("close") / col("close").shift(polars_talib::prelude::Expr::Nth(144)) - lit(1.0))
+    //             .alias("momentum_144")),
+    //     )
+    //     .collect()
+    //     .expect("计算动量指标发生错误");
 
     // 打印最终结果
-    println!("{:?}", momentum_df);
+    // println!("{:?}", momentum_df);
 
-    Ok(df)
+    Ok(df.clone())
 }
 
 // 替换的 ATR 计算函数，整合到 Polars 表达式中
@@ -97,51 +98,53 @@ fn calculate_atr(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
     let close_series: Series = close.as_materialized_series().clone();
     let high_series: Series = high.as_materialized_series().clone();
     let low_series: Series = low.as_materialized_series().clone();
-    let atr_real_valus = atr(&[close_series, high_series, low_series], kwargs)?;
-    // 将 ATR 结果添加为新列
-    // let result_df = df
-    // .lazy()
-    // .with_columns(vec![
-    //     col("close"),
-    //     col("high"),
-    //     col("low"),
-    // ])
-    // .collect()? // 先收集成 DataFrame
-    // .apply(
-    //     |df| {
-    //         // 将多个列合并为结构体
-    //         let close = df.column("close")?;
-    //         let high = df.column("high")?;
-    //         let low = df.column("low")?;
-            
-    //         let cols = vec![close.clone(), high.clone(), low.clone()];
-            
-    //         // 调用自定义函数
-    //         let atr_real = atr(&cols,kwargs)?;
-    //         Ok(Some(atr_real))
-    //     },
-    //     GetOutput::from_type(DataType::Float64),
-    // )
-    // .alias("atr_real")
-    // .collect()?;
+    let mut atr_real_series = atr(&[close_series, high_series, low_series], kwargs)?;
+    
+    atr_real_series.rename("atr_real".into());
 
-    let result_df = df
-    .lazy()
-    .with_columns(vec![col("close"), col("high"), col("low")])
-    .map(
-        move |df| {
-            let close = df.column("close")?;
-            let high = df.column("high")?;
-            let low = df.column("low")?;
-            let cols = vec![close.as_materialized_series().clone(), high.as_materialized_series().clone(), low.as_materialized_series().clone()];
-             // 调用自定义函数
-            let atr_real = atr(&cols,kwargs)?;
-            Ok(Some(atr_real))
-        },
-        GetOutput::from_type(DataType::Float64),
-    )
-    .alias("atr_real")
-    .collect()?;
+    df.clone().with_column(atr_real_series)?;
 
-    Ok(result_df)
+    Ok(df.clone())
+}
+
+fn calculate_atr1(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
+    let kwargs = ATRKwargs { timeperiod: period };
+
+    // let close = df.column("close")?;
+    // let high = df.column("high")?;
+    // let low = df.column("low")?;
+    // // 将 Column 转换为 Series
+    // let close_series: Series = close.as_materialized_series().clone();
+    // let high_series: Series = high.as_materialized_series().clone();
+    // let low_series: Series = low.as_materialized_series().clone();
+    // let mut atr_real_series = atr(&[close_series, high_series, low_series], kwargs)?;
+    
+    // atr_real_series.rename("atr_real".into());
+    // let result_df = df.lazy().with_column(atr_real_series).collect()?;
+    
+   // 在 LazyFrame 中应用自定义函数
+   let result = df.lazy()
+   .with_column(
+       // 使用 apply 将自定义逻辑应用到指定列
+       {
+           let cols = &[col("close"), col("high"), col("low")];
+           concat_list(cols)? // 将列合并为列表
+               .apply(
+                   |series| {
+                       // 将每行转换为 &[f64]
+                    //    let values: Vec<f64> = series
+                    //        .f64()?
+                    //        .into_no_null_iter()
+                    //        .collect();
+                     let high_series: Series = series.as_materialized_series().clone();
+                       Ok(Some(polars_talib::prelude::Column::Series(atr(cols,kwargs)?)))
+                   },
+                   GetOutput::from_type(DataType::Float64),
+               )
+               .alias("atr_real")
+       },
+   )
+   .collect()?; // 执行计算
+
+    Ok(result)
 }
