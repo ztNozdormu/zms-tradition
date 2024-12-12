@@ -5,8 +5,8 @@ macro_rules! struct_vec_to_dataframe {
         let mut columns = Vec::new();
 
         $(
-            let series = Series::new(stringify!($field), $data.iter().map(|s| s.$field.clone()).collect::<Vec<_>>());
-            columns.push(series);
+            let series = Series::new(stringify!($field).into(), $data.iter().map(|s| s.$field.clone()).collect::<Vec<_>>());
+            columns.push(polars_talib::prelude::Column::Series(series));
         )*
 
         DataFrame::new(columns).expect("Failed to create DataFrame")
