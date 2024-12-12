@@ -1,4 +1,4 @@
-use std::borrow::BorrowMut;
+use std::{borrow::BorrowMut, sync::Arc};
 
 use barter_xchange::exchange::binance::model::KlineSummary;
 use error::PolarsResult;
@@ -8,7 +8,7 @@ use lazy::frame::LazyFrame;
 use polars_talib::datatypes::DataType;
 use polars_talib::volatility::*;
 use polars_talib::*;
-use prelude::{col, lit, map_multiple, DataFrame, GetOutput, IntoLazy, NamedFrom};
+use prelude::{col, expr, lit, map_multiple, DataFrame, GetOutput, IntoLazy, NamedFrom};
 use series::Series;
 
 use crate::{calculation_error::StiffnessError, candle_to_dataframe};
@@ -110,7 +110,7 @@ fn calculate_atr(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
 fn calculate_atr1(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
     let kwargs = ATRKwargs { timeperiod: period };
 
-    // let close = df.column("close")?;
+    let close = df.column("close")?;
     // let high = df.column("high")?;
     // let low = df.column("low")?;
     // // 将 Column 转换为 Series
@@ -131,12 +131,6 @@ fn calculate_atr1(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
            concat_list(cols)? // 将列合并为列表
                .apply(
                    |series| {
-                       // 将每行转换为 &[f64]
-                    //    let values: Vec<f64> = series
-                    //        .f64()?
-                    //        .into_no_null_iter()
-                    //        .collect();
-                     let high_series: Series = series.as_materialized_series().clone();
                        Ok(Some(polars_talib::prelude::Column::Series(atr(cols,kwargs)?)))
                    },
                    GetOutput::from_type(DataType::Float64),
@@ -146,5 +140,49 @@ fn calculate_atr1(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
    )
    .collect()?; // 执行计算
 
+
     Ok(result)
 }
+// /// 自定义的 ATR 计算函数，接收 Expr 参数，生成新的列
+fn atr_custom_lazy(lazy_df: LazyFrame, kwargs: ATRKwargs) -> LazyFrame {
+    // 在 LazyFrame 中构建 ATR 计算列
+    lazy_df.with_columns(vec![
+        // 使用 Expr 进行延迟计算并调用 ATR
+        expr(vec![
+            col("close"),
+            col("high"),
+            col("low"),
+        ])
+        .apply(
+            |series| {
+               let series = &[series[0],series[1],series[2]];
+                // let close = &series[0];
+                // let high = &series[1];
+                // let low = &series[2];
+                // 使用自定义的 atr 函数进行计算
+                atr(series, kwargs)
+            },
+            GetOutput::from_type(DataType::Float64),
+        )
+        .alias("atr_real"),
+    ])
+}
+
+
+// 自定义的 ATR 计算函数，接收 Expr 参数，生成新的列
+// fn atr_custom_lazy(lazy_df: LazyFrame, kwargs: ATRKwargs) -> LazyFrame {
+//     lazy_df.with_columns(vec![
+//         // 使用 `apply` 调用 `atr` 函数，生成新的 `atr_real` 列
+//         // `col("close"), col("high"), col("low")` 是列的表达式
+//         col("close")
+//             .and_then(|close| {
+//                 let high = col("high");
+//                 let low = col("low");
+
+//                 // 将三列传递给自定义的 `atr` 函数
+//                 atr(&[close, high, low], kwargs)
+//                     .map(|result| result.alias("atr_real"))
+//             })
+//             .unwrap(),
+//     ])
+// }
