@@ -16,7 +16,7 @@ pub async fn calculate_indicators(klines: &Vec<KlineSummary>) -> Result<DataFram
 
     // 计算 ATR（14 周期）
     // df = calculate_atr(&df, 14).expect("atr计算失败"); //df.ta_atr("high", "low", "close", 14, "atr_real")?;
-    let atr_real= calculate_atr1(&df, 14).expect("atr计算失败"); 
+    let atr_real= calculate_atr(&df, 14).expect("atr计算失败"); 
 
     // 计算 ATR 除以 (close + open) / 2
     let atr_scaled = atr_real
@@ -85,26 +85,26 @@ pub async fn calculate_indicators(klines: &Vec<KlineSummary>) -> Result<DataFram
 
 // 替换的 ATR 计算函数，整合到 Polars 表达式中
 
-fn calculate_atr(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
-    let kwargs = ATRKwargs { timeperiod: period };
+// fn calculate_atr(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
+//     let kwargs = ATRKwargs { timeperiod: period };
 
-    let close = df.column("close")?;
-    let high = df.column("high")?;
-    let low = df.column("low")?;
-    // 将 Column 转换为 Series
-    let close_series: Series = close.as_materialized_series().clone();
-    let high_series: Series = high.as_materialized_series().clone();
-    let low_series: Series = low.as_materialized_series().clone();
-    let mut atr_real_series = atr(&[close_series, high_series, low_series], kwargs)?;
+//     let close = df.column("close")?;
+//     let high = df.column("high")?;
+//     let low = df.column("low")?;
+//     // 将 Column 转换为 Series
+//     let close_series: Series = close.as_materialized_series().clone();
+//     let high_series: Series = high.as_materialized_series().clone();
+//     let low_series: Series = low.as_materialized_series().clone();
+//     let mut atr_real_series = atr(&[close_series, high_series, low_series], kwargs)?;
     
-    atr_real_series.rename("atr_real".into());
+//     atr_real_series.rename("atr_real".into());
 
-    df.clone().with_column(atr_real_series)?;
+//     df.clone().with_column(atr_real_series)?;
 
-    Ok(df.clone())
-}
+//     Ok(df.clone())
+// }
 
-fn calculate_atr1(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
+fn calculate_atr(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
 
    let kwargs = ATRKwargs { timeperiod: period };
    // 将指定的列转换为 Struct 并使用自定义函数计算
@@ -113,11 +113,11 @@ fn calculate_atr1(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
    .with_column(
        // 将 col1 和 col2 转换为 Struct
        as_struct((&[col("close"), col("high"), col("low")]).to_vec())
-           .alias("combined_struct")
+           .alias("chl_struct")
    )
    .with_column(
        // 对 Struct 应用自定义函数
-       col("combined_struct")
+       col("chl_struct")
            .apply(move |series| {
                let struct_series = series.struct_()?;  
                let close = struct_series.field_by_name("close")?;
@@ -128,7 +128,7 @@ fn calculate_atr1(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
                Ok(Some(polars_talib::prelude::Column::Series(res)))
                // Ok(Some(Series::new("result".into(), computed)))
            }, GetOutput::same_type())
-           .alias("custom_computed")
+           .alias("atr_real")
    )
    .collect()?;
 
@@ -139,6 +139,24 @@ fn calculate_atr1(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
 
 #[cfg(test)]
 mod tests {
+    use crate::{candle_to_dataframe, market_data_feed, trend_algorithm::stiffness_trend::*};
 
-    
+
+  
+
+    #[tokio::test]
+    async fn test_dataframe_atr() {
+        let candles = market_data_feed("btcusdt").await;
+        let df = candle_to_dataframe(&candles).await;
+        let df_art_real = calculate_atr(&df,14);
+        println!("df_atr_real_1 {:?}", df_art_real);
+    }
+
+    #[tokio::test]
+    async fn test_dataframe_adx() {
+        let candles = market_data_feed("btcusdt").await;
+        let df = candle_to_dataframe(&candles).await;
+        let df_art_real = calculate_atr(&df,14);
+        println!("df_atr_real {:?}", df_art_real);
+    }
 }
