@@ -2,9 +2,10 @@
 use barter_xchange::exchange::binance::model::KlineSummary;
 use error::PolarsResult;
 use lazy::dsl::*;
+use momentum::{adx, minus_di, plus_di};
 use polars_talib::volatility::*;
 use polars_talib::*;
-use prelude::{col, lit, DataFrame, GetOutput, IntoLazy};
+use prelude::{col, lit, Column, DataFrame, GetOutput, IntoLazy};
 use series::Series;
 
 use crate::{calculation_error::StiffnessError, candle_to_dataframe};
@@ -33,9 +34,9 @@ pub async fn calculate_indicators(klines: &Vec<KlineSummary>) -> Result<DataFram
         .with_column((col("close") - lit(n_factor) * col("atr_real")).alias("atr_down"))
         .collect()
         .expect("计算 ATR 上下界发生错误");
-
+   // dataframe['adx_trend'] = dataframe['adx'].rolling(3).mean() / dataframe['adx'].rolling(14).mean()
     // 计算 +DI 和 -DI（14 周期）
-    //   let atr_di = atr_bounds
+    // let atr_di = atr_bounds
     //       .ta_plus_di("high", "low", "close", 14, "plus_DI")?
     //       .ta_minus_di("high", "low", "close", 14, "minus_DI")?;
 
@@ -104,6 +105,26 @@ pub async fn calculate_indicators(klines: &Vec<KlineSummary>) -> Result<DataFram
 //     Ok(df.clone())
 // }
 
+
+/**
+ * Helper function to extract the fields from the struct series
+ * use example:
+ *  let (close, high, low) = extract_struct_fields(series)?;
+ *     atr(&[high, low, close], kwargs)
+ */ 
+fn extract_struct_fields(series: &Column) -> PolarsResult<(Series, Series, Series)> {
+    let struct_series = series.struct_()?;
+    
+    let close = struct_series.field_by_name("close")?.clone();
+    let high = struct_series.field_by_name("high")?.clone();
+    let low = struct_series.field_by_name("low")?.clone();
+
+    Ok((close, high, low))
+}
+
+/**
+ * calculate atr_real indicator
+ */
 fn calculate_atr(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
 
    let kwargs = ATRKwargs { timeperiod: period };
@@ -116,17 +137,12 @@ fn calculate_atr(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
            .alias("chl_struct")
    )
    .with_column(
-       // 对 Struct 应用自定义函数
+       // 对 Struct 应用自定义函数 计算 atr_real
        col("chl_struct")
            .apply(move |series| {
-               let struct_series = series.struct_()?;  
-               let close = struct_series.field_by_name("close")?;
-               let high = struct_series.field_by_name("high")?;
-               let low = struct_series.field_by_name("low")?;
-    
+               let (close, high, low) = extract_struct_fields(&series)?;
                let res: Series = atr(&[close,high,low],kwargs.clone())?;
                Ok(Some(polars_talib::prelude::Column::Series(res)))
-               // Ok(Some(Series::new("result".into(), computed)))
            }, GetOutput::same_type())
            .alias("atr_real")
    )
@@ -134,6 +150,52 @@ fn calculate_atr(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
 
     Ok(result)
 }
+/**
+ * calculate adx_trend indicator
+ */
+fn calculate_adx_trend(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
+
+ 
+    // 将指定的列转换为 Struct 并使用自定义函数计算
+    let result = df.clone()
+    .lazy()
+    .with_column(
+        // 将 col1 和 col2 转换为 Struct
+        as_struct((&[col("close"), col("high"), col("low")]).to_vec())
+            .alias("chl_struct")
+    )
+    .with_column(
+        // 计算plus_DI
+        col("chl_struct")
+            .apply(move |series| {
+                let (close, high, low) = extract_struct_fields(&series)?;
+                let res: Series = plus_di(&[high,low,close],TimePeriodKwargs { timeperiod: period })?;
+                Ok(Some(polars_talib::prelude::Column::Series(res)))
+            }, GetOutput::same_type())
+            .alias("plus_DI")
+    ).with_column(
+        // 计算 minus_DI
+        col("chl_struct")
+            .apply(move |series| {
+                let (close, high, low) = extract_struct_fields(&series)?;
+                let res: Series = minus_di(&[high,low,close],TimePeriodKwargs { timeperiod: period })?;
+                Ok(Some(polars_talib::prelude::Column::Series(res)))
+            }, GetOutput::same_type())
+            .alias("minus_DI")
+    ).with_column(
+        // 计算 adx
+        col("chl_struct")
+            .apply(move |series| {
+                let (close, high, low) = extract_struct_fields(&series)?;
+                let res: Series = adx(&[high,low,close],TimePeriodKwargs { timeperiod: period })?;
+                Ok(Some(polars_talib::prelude::Column::Series(res)))
+            }, GetOutput::same_type())
+            .alias("adx")
+    )
+    .collect()?;
+ 
+     Ok(result)
+ }
 // /// 自定义的 ATR 计算函数，接收 Expr 参数，生成新的列
 
 
