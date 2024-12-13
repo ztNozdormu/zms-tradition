@@ -10,7 +10,7 @@ use tracing::info;
 
 pub mod cal_types;
 pub mod calculation_error;
-pub mod trend_algorithm;
+pub mod indicator_example;
 
 // get symbols list
 pub async fn get_symbols() -> Vec<Symbol> {
