@@ -1,14 +1,10 @@
-use std::{borrow::BorrowMut, sync::Arc};
 
 use barter_xchange::exchange::binance::model::KlineSummary;
 use error::PolarsResult;
-// use frame::DataFrame;
 use lazy::dsl::*;
-use lazy::frame::LazyFrame;
-use polars_talib::datatypes::DataType;
 use polars_talib::volatility::*;
 use polars_talib::*;
-use prelude::{col, expr, lit, map_multiple, DataFrame, GetOutput, IntoLazy, NamedFrom};
+use prelude::{col, lit, DataFrame, GetOutput, IntoLazy};
 use series::Series;
 
 use crate::{calculation_error::StiffnessError, candle_to_dataframe};
@@ -16,13 +12,14 @@ use crate::{calculation_error::StiffnessError, candle_to_dataframe};
 // calculate indicators
 pub async fn calculate_indicators(klines: &Vec<KlineSummary>) -> Result<DataFrame, StiffnessError> {
     
-    let mut df = candle_to_dataframe(klines).await;
+    let df = candle_to_dataframe(klines).await;
 
     // 计算 ATR（14 周期）
-    df = calculate_atr(&df, 14).expect("atr计算失败"); //df.ta_atr("high", "low", "close", 14, "atr_real")?;
+    // df = calculate_atr(&df, 14).expect("atr计算失败"); //df.ta_atr("high", "low", "close", 14, "atr_real")?;
+    let atr_real= calculate_atr1(&df, 14).expect("atr计算失败"); 
 
     // 计算 ATR 除以 (close + open) / 2
-    let atr_scaled = df
+    let atr_scaled = atr_real
         .lazy()
         .with_column((col("atr_real") / ((col("close") + col("open")) / lit(2))).alias("atr"))
         .collect()
@@ -82,8 +79,8 @@ pub async fn calculate_indicators(klines: &Vec<KlineSummary>) -> Result<DataFram
 
     // 打印最终结果
     // println!("{:?}", momentum_df);
-
-    Ok(df.clone())
+    todo!()
+    // Ok(atr_real)
 }
 
 // 替换的 ATR 计算函数，整合到 Polars 表达式中
@@ -108,81 +105,40 @@ fn calculate_atr(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
 }
 
 fn calculate_atr1(df: &DataFrame, period: i32) -> PolarsResult<DataFrame> {
-    let kwargs = ATRKwargs { timeperiod: period };
 
-    let close = df.column("close")?;
-    // let high = df.column("high")?;
-    // let low = df.column("low")?;
-    // // 将 Column 转换为 Series
-    // let close_series: Series = close.as_materialized_series().clone();
-    // let high_series: Series = high.as_materialized_series().clone();
-    // let low_series: Series = low.as_materialized_series().clone();
-    // let mut atr_real_series = atr(&[close_series, high_series, low_series], kwargs)?;
-    
-    // atr_real_series.rename("atr_real".into());
-    // let result_df = df.lazy().with_column(atr_real_series).collect()?;
-    
-   // 在 LazyFrame 中应用自定义函数
-   let result = df.lazy()
+   let kwargs = ATRKwargs { timeperiod: period };
+   // 将指定的列转换为 Struct 并使用自定义函数计算
+   let result = df.clone()
+   .lazy()
    .with_column(
-       // 使用 apply 将自定义逻辑应用到指定列
-       {
-           let cols = &[col("close"), col("high"), col("low")];
-           concat_list(cols)? // 将列合并为列表
-               .apply(
-                   |series| {
-                       Ok(Some(polars_talib::prelude::Column::Series(atr(cols,kwargs)?)))
-                   },
-                   GetOutput::from_type(DataType::Float64),
-               )
-               .alias("atr_real")
-       },
+       // 将 col1 和 col2 转换为 Struct
+       as_struct((&[col("close"), col("high"), col("low")]).to_vec())
+           .alias("combined_struct")
    )
-   .collect()?; // 执行计算
-
+   .with_column(
+       // 对 Struct 应用自定义函数
+       col("combined_struct")
+           .apply(move |series| {
+               let struct_series = series.struct_()?;  
+               let close = struct_series.field_by_name("close")?;
+               let high = struct_series.field_by_name("high")?;
+               let low = struct_series.field_by_name("low")?;
+    
+               let res: Series = atr(&[close,high,low],kwargs.clone())?;
+               Ok(Some(polars_talib::prelude::Column::Series(res)))
+               // Ok(Some(Series::new("result".into(), computed)))
+           }, GetOutput::same_type())
+           .alias("custom_computed")
+   )
+   .collect()?;
 
     Ok(result)
 }
 // /// 自定义的 ATR 计算函数，接收 Expr 参数，生成新的列
-fn atr_custom_lazy(lazy_df: LazyFrame, kwargs: ATRKwargs) -> LazyFrame {
-    // 在 LazyFrame 中构建 ATR 计算列
-    lazy_df.with_columns(vec![
-        // 使用 Expr 进行延迟计算并调用 ATR
-        expr(vec![
-            col("close"),
-            col("high"),
-            col("low"),
-        ])
-        .apply(
-            |series| {
-               let series = &[series[0],series[1],series[2]];
-                // let close = &series[0];
-                // let high = &series[1];
-                // let low = &series[2];
-                // 使用自定义的 atr 函数进行计算
-                atr(series, kwargs)
-            },
-            GetOutput::from_type(DataType::Float64),
-        )
-        .alias("atr_real"),
-    ])
+
+
+#[cfg(test)]
+mod tests {
+
+    
 }
-
-
-// 自定义的 ATR 计算函数，接收 Expr 参数，生成新的列
-// fn atr_custom_lazy(lazy_df: LazyFrame, kwargs: ATRKwargs) -> LazyFrame {
-//     lazy_df.with_columns(vec![
-//         // 使用 `apply` 调用 `atr` 函数，生成新的 `atr_real` 列
-//         // `col("close"), col("high"), col("low")` 是列的表达式
-//         col("close")
-//             .and_then(|close| {
-//                 let high = col("high");
-//                 let low = col("low");
-
-//                 // 将三列传递给自定义的 `atr` 函数
-//                 atr(&[close, high, low], kwargs)
-//                     .map(|result| result.alias("atr_real"))
-//             })
-//             .unwrap(),
-//     ])
-// }
