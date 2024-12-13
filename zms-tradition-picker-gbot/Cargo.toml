@@ -23,6 +23,7 @@ mockall = "0.13.0"
 # name so with dashes
 zms-tradition-proto-grpc-types = { path = "../zms-tradition-proto-grpc-types" }
 zms-tradition-cal-types = { path = "../zms-tradition-cal-types" }
+# zms-tradition-cal-types = { git = "https://github.com/ztNozdormu/zms-tradition-cal-types.git", branch="main"  }
 
 # exchange
 # barter-xchange = { git = "https://github.com/ztNozdormu/barter-rs.git", members = ["barter-xchange"], branch="dev-local" }
